@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#define MAX_THREADS 1024
+#include <signal.h>
+#define MAX_THREADS 3
 
 
 typedef struct matrix_s
