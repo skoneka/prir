@@ -42,7 +42,7 @@ int checkFreeThread(int id)
 void setThreadState(int id, char state)
 {
     pthread_mutex_lock(&threadMutex);
-    printf("%d - %d\n", id, state);
+    printf("setThreadState id=%d , state=%d\n", id, state);
     activeThreads[id] = state;
     pthread_mutex_unlock(&threadMutex);
 }
@@ -59,20 +59,22 @@ char getThreadState(int id)
 int getFreeThread(int N)
 {
     int i = 0;
-    while(1)
-    {
+    while(1) {
         if (i == N)
             i = 0;
 
-        if(checkFreeThread(i))
+        fprintf(stderr, "checkFreeThread(%d)\n", i);
+        if(checkFreeThread(i)) {
+        fprintf(stderr, "checkFreeThread(%d) = %d\n", i, i);
             return i;
+        }
         i++;
     }
 }
 
 void *mulThread(void *ptr)
 {
-    printf("In thread\n");
+    printf("Thread number %ld\n", pthread_self());
     thread_data_t *threadData = (thread_data_t*)ptr;
     int thID = threadData->threadID;
     matrix_data_t *m = threadData->m;
@@ -126,10 +128,7 @@ void mulMatrix(matrix_data_t *m, int N)
                 fprintf(stderr, "%s:%d pthread_create fail %d\n", __FILE__, __LINE__, ret);
                 exit(EXIT_FAILURE);
             }
-            else
-                fprintf(stderr, "%s:%d pthread_create OK\n", __FILE__, __LINE__);
         }
-
     }
 
     for (i = 0; i < N;i++)

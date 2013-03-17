@@ -1,5 +1,5 @@
 C=gcc
-CFLAGS=-I.
+CFLAGS=-I. -ggdb
 DEPS = #hellomake.h
 OBJ = main.o
 LIBS=-lpthread
