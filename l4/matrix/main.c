@@ -70,7 +70,7 @@ int getFreeThread(int N)
     }
 }
 
-void mulThread(void *ptr)
+void *mulThread(void *ptr)
 {
     printf("In thread\n");
     thread_data_t *threadData = (thread_data_t*)ptr;
@@ -110,12 +110,24 @@ void mulMatrix(matrix_data_t *m, int N)
             if(activeThreads[thID] == 2) //juz raz uzylismy...
             {
                 printf("Czekamy\n");
-                pthread_join(&threads[thID], NULL);
+                ret = pthread_join(threads[thID], NULL);
+                if( ret != 0) {
+                    fprintf(stderr, "%s:%d pthread_join fail %d\n", __FILE__, __LINE__, ret);
+                    exit(EXIT_FAILURE);
+                }
+                else
+                    fprintf(stderr, "%s:%d pthread_join OK\n", __FILE__, __LINE__);
             }
 
             setThreadState(thID, 0);// Busy
-
-            ret = pthread_create( &threads[thID], NULL, mulThread, (void*) threadData);
+            
+            ret = pthread_create( &threads[thID], NULL, mulThread, (void*) threadData); 
+            if( ret != 0) {
+                fprintf(stderr, "%s:%d pthread_create fail %d\n", __FILE__, __LINE__, ret);
+                exit(EXIT_FAILURE);
+            }
+            else
+                fprintf(stderr, "%s:%d pthread_create OK\n", __FILE__, __LINE__);
         }
 
     }
@@ -124,7 +136,7 @@ void mulMatrix(matrix_data_t *m, int N)
     {
         if(getThreadState(i) == 2 || getThreadState(i) == 0)
         {
-            pthread_join(&threads[i], NULL);
+            pthread_join(threads[i], NULL);
         }
     }
 }
