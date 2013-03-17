@@ -36,9 +36,14 @@ void freeMatrix(matrix_t *m);
 int fileToMatrix(matrix_data_t *m, char *fileName);
 void printMatrix(matrix_t *m);
 
-pthread_t threads[MAX_THREADS] = {0};
-char activeThreads[MAX_THREADS] = {1};
-pthread_mutex_t threadMutex = {0};
+pthread_t threads[MAX_THREADS]; /* array initialized to NULLs */
+int activeThreads[MAX_THREADS]; /* array initialized to 1 */
+/*
+ * activeThreads[id] > 0 - wolny Thread
+ * activeThreads[id] = 1 - nie uzyty thread
+ * activeThreads[id] = 2 - uzyty ale wolny thread
+ */
+pthread_mutex_t threadMutex = NULL;
 
 int checkFreeThread(int id)
 {
@@ -135,7 +140,8 @@ void mulMatrix(matrix_data_t *m, int N)
             }
 
             setThreadState(thID, 0);// Busy
-            
+
+            //raise(SIGINT);
             ret = pthread_create( &threads[thID], NULL, mulThread, (void*) threadData); 
             if( ret != 0) {
                 fprintf(stderr, "%s:%d pthread_create fail %d\n", __FILE__, __LINE__, ret);
@@ -228,8 +234,16 @@ void printMatrix(matrix_t *m)
     }
 }
 
+void init(void)
+{
+    int i;
+    for ( i=0; i < MAX_THREADS; i++ ) activeThreads[i] = 1;
+    for ( i=0; i < MAX_THREADS; i++ ) threads[i] = NULL;
+}
+
 int main(void)
 {
+    init();
     matrix_data_t m = {0};
     fileToMatrix(&m, "matrix.txt");
     mulMatrix(&m, 4);
