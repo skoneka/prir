@@ -1,4 +1,11 @@
+C=gcc
+CFLAGS=-I.
+DEPS = #hellomake.h
+OBJ = main.o
+LIBS=-lpthread
 
+%.o: %.c $(DEPS)
+	@$(CC) -c -o $@ $< $(CFLAGS)
 
-m: main.c
-	@cc main.c -lpthread -o m
+main: $(OBJ)
+	@gcc -o $@ $^ $(CFLAGS) $(LIBS)
