@@ -151,7 +151,7 @@ void freeMatrix(matrix_t *m)
         free(m->M[i]);
     }
 
-    free(m->M[i]);
+    free(m->M);
 }
 
 int fileToMatrix(matrix_data_t *m, char *fileName)
