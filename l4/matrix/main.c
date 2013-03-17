@@ -185,9 +185,9 @@ void sumCMatrixElements(matrix_data_t *m)
             /* VERBOSE fprintf(stderr, "Reusing thread... securing with pthread_join just in case\n"); */
             int *val;
             ret = pthread_join(threads[thID], (void **)&val);
-            /* VERBOSE fprintf(stderr, "Thread %d exit status %d\n", thID, val);  */
+            fprintf(stderr, "Thread %d exit status %d\n", thID, val);
             if( ret != 0) {
-                /* VERBOSE fprintf(stderr, "%s:%d pthread_join fail %d\n", __FILE__, __LINE__, ret); */
+                fprintf(stderr, "%s:%d pthread_join fail %d\n", __FILE__, __LINE__, ret);
                 exit(EXIT_FAILURE);
             }
             else {
@@ -203,7 +203,7 @@ void sumCMatrixElements(matrix_data_t *m)
         /* VERBOSE fprintf(stderr, "Thread %d\n", thID);  */
         ret = pthread_create( &threads[thID], NULL, sumThread, (void*) threadData); 
         if( ret != 0) {
-            /* VERBOSE fprintf(stderr, "%s:%d pthread_create fail %d\n", __FILE__, __LINE__, ret); */
+            fprintf(stderr, "%s:%d pthread_create fail %d\n", __FILE__, __LINE__, ret);
             exit(EXIT_FAILURE);
         }
     }
@@ -213,9 +213,9 @@ void sumCMatrixElements(matrix_data_t *m)
         {
             int *val;
             int ret = pthread_join(threads[i], (void **)&val);
-            /* VERBOSE fprintf(stderr, "Thread %d exit status %d\n", i, val);  */
+            fprintf(stderr, "Thread %d exit status %d\n", i, val);
             if( ret != 0) {
-                /* VERBOSE fprintf(stderr, "%s:%d pthread_join fail %d\n", __FILE__, __LINE__, ret); */
+                fprintf(stderr, "%s:%d pthread_join fail %d\n", __FILE__, __LINE__, ret);
                 exit(EXIT_FAILURE);
             }
             else {
@@ -248,9 +248,9 @@ void mulMatrix(matrix_data_t *m)
                 /* VERBOSE fprintf(stderr, "Reusing thread... securing with pthread_join just in case\n"); */
                 int *val;
                 ret = pthread_join(threads[thID], (void **)&val);
-                /* VERBOSE fprintf(stderr, "Thread %d exit status %d\n", thID, val);  */
+                fprintf(stderr, "Thread %d exit status %d\n", thID, val);
                 if( ret != 0) {
-                    /* VERBOSE fprintf(stderr, "%s:%d pthread_join fail %d\n", __FILE__, __LINE__, ret); */
+                    fprintf(stderr, "%s:%d pthread_join fail %d\n", __FILE__, __LINE__, ret);
                     exit(EXIT_FAILURE);
                 }
                 else {
@@ -266,7 +266,7 @@ void mulMatrix(matrix_data_t *m)
             /* VERBOSE fprintf(stderr, "Thread %d\n", thID);  */
             ret = pthread_create( &threads[thID], NULL, mulThread, (void*) threadData); 
             if( ret != 0) {
-                /* VERBOSE fprintf(stderr, "%s:%d pthread_create fail %d\n", __FILE__, __LINE__, ret); */
+                fprintf(stderr, "%s:%d pthread_create fail %d\n", __FILE__, __LINE__, ret);
                 exit(EXIT_FAILURE);
             }
         }
@@ -278,9 +278,9 @@ void mulMatrix(matrix_data_t *m)
         {
             int *val;
             int ret = pthread_join(threads[i], (void **)&val);
-            /* VERBOSE fprintf(stderr, "Thread %d exit status %d\n", i, val);  */
+            fprintf(stderr, "Thread %d exit status %d\n", i, val);
                 if( ret != 0) {
-                    /* VERBOSE fprintf(stderr, "%s:%d pthread_join fail %d\n", __FILE__, __LINE__, ret); */
+                    fprintf(stderr, "%s:%d pthread_join fail %d\n", __FILE__, __LINE__, ret);
                     exit(EXIT_FAILURE);
                 }
                 else {
@@ -300,7 +300,7 @@ void makeMatrix(matrix_t *m)
     {
         m->M[i] = malloc(sizeof(double) * m->colums);
         if(m->M[i] == NULL) {
-            printf("failed to alloc mem");
+            fprintf(stderr, "failed to alloc mem");
         }
     }
 }
