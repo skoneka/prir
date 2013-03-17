@@ -2,9 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #define MAX_THREADS 1024
-pthread_t threads[MAX_THREADS] = {0};
-char activeThreads[MAX_THREADS] = {1};
-pthread_mutex_t threadMutex = {0};
+
 
 typedef struct matrix_s
 {
@@ -26,6 +24,20 @@ typedef struct thread_data_s
     int i,j;
     int threadID;
 } thread_data_t;
+
+int checkFreeThread(int id);
+void setThreadState(int id, char state);
+char getThreadState(int id);
+int getFreeThread(int N);
+void mulMatrix(matrix_data_t *m, int N);
+void makeMatrix(matrix_t *m);
+void freeMatrix(matrix_t *m);
+int fileToMatrix(matrix_data_t *m, char *fileName);
+void printMatrix(matrix_t *m);
+
+pthread_t threads[MAX_THREADS] = {0};
+char activeThreads[MAX_THREADS] = {1};
+pthread_mutex_t threadMutex = {0};
 
 int checkFreeThread(int id)
 {
