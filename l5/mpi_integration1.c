@@ -97,7 +97,7 @@ main(int argc, char **argv)
 
 
 		w+= integrate(&f,a,h,0);
-		for (i = n-els; i<n-1; i++) {
+		for (i = n-1; i>n-els; i--) {
 			w+= integrate(&f,a,h,i);
 		}
 
