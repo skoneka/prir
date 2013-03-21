@@ -5,6 +5,7 @@
 
 
 #define send_data_tag 2001
+#define send_child_data_tag 2002
 
 #define ROOT 0
 
@@ -17,25 +18,16 @@ f(double x)
 /*
  * a - start h - step index - shift
  */
-//simpson
-double 
-simpson(double a, double h, int index)
-{
-	double		result = 0;
-	double		ax = a + (h * (index - 1));
-	double		bx = a + (h * index);
-	result = ((bx - ax) / 6) * (f(ax) + (4 * f((ax + bx) / 2) + f(bx)));
-	return result;
-}
 
 //trapezoid
 double 
-trapezoid(double a, double h, int index)
+integrate(double (*func)(double), double a, double h, int index)
 {
 	double		result = 0;
 	double		ax = a + (h * (index - 1));
 	double		bx = a + (h * index);
-	result = (bx - ax) * (f(ax) + f(bx)) / 2;
+	result = (bx - ax) * (func(ax) + func(bx)) / 2;
+	printf("integrating range %f %f= %f\n", ax, bx,result);
 	return result;
 }
 
@@ -66,15 +58,33 @@ main(int argc, char **argv)
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
-
+/*
 	for (i = rank + 1; i <= n; i += size) {
-		w_p += trapezoid(a, h, i);
+		w_p += integrate(&f, a, h, i);
 
 	}
+*/
+
 
 	if (rank == 0) {
+		int els = n / size;
+		int els_r= n % size;
+		printf("els %d els_r %d\n", els, els_r);
+		int i;
+		for( i = 1; i < size; i++) {
+			int start = (i)*els;
+			int end = start+els;
+			printf("s %d e %d\n", start, end);
+			MPI_Send(&start, 1, MPI_INT, i, send_child_data_tag, MPI_COMM_WORLD);
+			MPI_Send(&end, 1, MPI_INT, i, send_child_data_tag, MPI_COMM_WORLD);
+		}
+		//policz els_r
+
+		
+
+
+
 		MPI_Status	status;
-		int		i;
 		double		r;
 		w += w_p;
 		for (i = 1; i < size; i++) {
@@ -82,8 +92,21 @@ main(int argc, char **argv)
 			w += r;
 		}
 
+		w+= integrate(&f,a,h,9);
 		printf("Result in range %lf do %lf = %lf\n", a, b, w);
 	} else {
+		int start;
+		int end;
+		int i;
+		MPI_Status	status;
+		MPI_Recv(&start, 1, MPI_INT, 0, send_child_data_tag, MPI_COMM_WORLD, &status);
+		MPI_Recv(&end, 1, MPI_INT, 0, send_child_data_tag, MPI_COMM_WORLD, &status);
+		printf("recv s %d e %d\n", start, end);
+		for (i = start; i <= end; i++) {
+			//printf("integrate %f %f %d\n", a, h, i);
+			w_p += integrate(&f, a, h, i);
+		}
+		printf("w_p result  %d do %d = %lf\n", start, end, w_p);
 		MPI_Send(&w_p, 1, MPI_DOUBLE, ROOT, send_data_tag, MPI_COMM_WORLD);
 	}
 	MPI_Finalize();
