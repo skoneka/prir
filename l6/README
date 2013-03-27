@@ -1,0 +1,68 @@
+W Wirtualnym Dziekanacie pojawiło się nowe ogłoszenie dla przedmiotu: DI1610:A - Programowanie równoległe i rozproszone - L: Czw. 14:15 - 16:00 w GE 510
+
+Ogłoszenie o tytule: MPI - drugie ćwiczenia zostało opublikowane w dniu 24.03.2013 o godzinie 17:46 przez mgr inż. Zuzanna Krawczyk
+
+ z następującą treścią:
+
+ Szanowni Państwo,
+ na najbliższe zajęcia prosiłabym o zapoznanie się z działaniem funkcji MPI do obsługi komunikacji kolektywnej czyli np:
+
+ MPI_Bcast
+ MPI_Gather
+ MPI_Scatter
+ MPI_Allgather
+ MPI_Allscatter
+ MPI_Reduce
+ MPI_Allreduce
+ MPI_Barrier
+
+
+W ramach zadania z drugiej części ćwiczeń dotyczących MPI proszę o zapoznanie się zdziałaniem programu realizującego model przetwarzania równoległego MapReduce przy pomocy MPI. 
+Ogólny opis idei MapReduce:
+http://en.wikipedia.org/wiki/MapReduce
+
+MapReduce jest szeroko stosowane przy przetwarzaniu dużych zbiorów danych. Nazwa pochodzi od dwóch klasycznych w funkcyjnych językach programowania operacji. Obliczenia realizowane są podczas dwóch głównych etapów:
+
+etap mapowania, podczas którego na podstawie danych wejściowych obliczane są wyniki pośrednie.
+etap redukcji, w którym z wyników pośrednich obliczany jest wynik końcowy.
+Szczegółowy opis, który powinniście Państwo przeczytać i przyswoić, znajduje się pod adresem:
+http://research.google.com/archive/mapreduce-osdi04-slides/index.html
+
+Przykładowy program wykorzystuje model MapReduce do zliczania wystąpień poszczególnych słów w dokumencie.
+Ogólny przebieg działania programu:
+
+Faza map:
+1. Proces główny wczytuje dokument w postaci listy słów:
+['one', 'two', 'three', 'four', 'five', 'one']
+2. Proces główny rozdziela listę między procesy:
+p0: ['one', 'two']
+p1: ['three', 'four']
+p2: ['five', 'one']
+3. Każdy proces w wyniku przetwarzania tworzy przyporządkowanie, w którym dla każdego słowa napotkanego w przetwarzanej części dokumentu przypisana jest lista wystąpień tego słowa:
+p0: {'one': [1], 'two': [1]}
+p1: {'three': [1], 'four': [1]}
+p2: {'five': [1], 'one': [1]}
+4. Proces główny zbiera słowniki i łączy je w jeden globalny słownik.
+{'one': [1, 1], 'two': [1], 'three': [1], 'four': [1], 'five': [1]}
+Faza reduce:
+5. Proces główny rozdziela słownik między procesy.
+p0: {'one': [1, 1], 'two': [1]}
+p1: {'three': [1], 'four': [1]}
+p2: {'five': [1]}
+6. Każdy proces redukuje listę wystąpień przypisanych mu słów otrzymując w wyniku pojedynczą wartość będącą sumaryczną liczbą wystąpień danego słowa w dokumencie.
+p0: {'one': 2, 'two': 1}
+p1: {'three': 1, 'four': 1}
+p2: {'five': 1}
+7. Proces główny ponownie zbiera słowniki i łączy je w jeden globalny słownik przypisujący każdemu z słów liczbę wystąpień.
+{'one': 2, 'two': 1, 'three': 1, 'four': 1, 'five': 1}
+8. Proces główny prezentuje wyniki.
+
+Państwa zadaniem będzie rozwiązanie podobnego problemu w oparciu o program przykładowy.
+		 	 	 	
+				
+
+		 			1. 		 		 			book 			 			(0,6 kb) 			 			 			Z. Krawczyk, 27.03.2013 02:01 		 				 		 	
+		 			2. 		 		 			main.c 			 			(9,1 kb) 			 			 			Z. Krawczyk, 27.03.2013 02:01 		 				 		 	
+		 			3. 		 		 			Makefile 			 			(0,1 kb) 			 			 			Z. Krawczyk, 27.03.2013 02:01 		 				 		 	
+
+
