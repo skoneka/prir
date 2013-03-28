@@ -1,3 +1,56 @@
+Zadanie
+
+Każda usługa działająca w systemie pozostawia ślad po swojej działalności w postaci wpisów w dzienniku (ang. log). Wraz z upływem czasu pliki dziennika rozrastają się zajmując pokaźną ilość miejsca na dysku. Rozsądna analiza takich danych ułatwia (czasem umożliwia) administratorom rozpoznawanie przyczyn błędów czy też przewidywanie przyszłych zagrożeń. Jednak wymaga to przetworzenia olbrzymiej ilości danych historycznych, co stanowi jedno z pól zastosowań obliczeń równoległych.
+
+
+Proszę napisać program, który przetwarza pliki z logami (przykładowo "access-log"serwera WWW). Dla uproszczenia przyjmujemy, że struktura dziennika jest następująca:
+2013-03-27 21:47:14,021 83.6.229.4 "POST /result HTTP/1.1" 500
+
+2013-03-27 21:47:20,035 83.6.229.4 "GET /favicon.ico HTTP/1.1" 404
+
+2013-03-27 23:27:25,299 107.21.253.204 "POST /result HTTP/1.1" 200
+
+2013-03-27 23:27:25,373 107.21.253.204 "GET /favicon.ico HTTP/1.1" 404
+
+2013-03-27 23:47:35,052 194.29.146.3 "GET /favicon.ico HTTP/1.1" 404
+
+2013-03-27 23:47:35,330 194.29.146.3 "POST /result HTTP/1.1" 200
+
+2013-03-27 23:48:46,443 91.231.138.27 "GET /favicon.ico HTTP/1.1" 404
+
+
+Każdy wpis zajmuje jeden wiersz dziennika, poszczególne pola odzielone znakami odstępu.
+Program w oparciu o wzorzec MapReduce (przybliżony w programie przykładowym), powinien umożliwiać generowanie statystyk (rozkład liczby żądań w czasie, rozkład liczby żądań z poszczególnych adresów IP).
+Program powinien mieć następujący interfejs:
+
+./program --(addr|stat|time) path/to/logfile
+
+
+Dla opcji grupowania po adresie - załóżmy, że plik dziennika ma zawartość taką jak zaprezentowana powyżej i chcemy wykryć adresy, które najbardziej obciążają nasz serwer WWW:
+
+83.6.229.4 2
+
+107.21.253.204 2
+
+194.29.146.3 2
+
+91.231.138.27 1
+
+
+Dla opcji grupowanie po czasie - załóżmy, że plik dziennika ma zawartość taką jak zaprezentowana powyżej. Chcemy wygenerować wykres obciążenia serwera w czasie z dokładnością do minut:
+
+2013-03-27 21:47 2
+
+2013-03-27 23:27 2
+
+2013-03-27 23:47 2
+
+2013-03-27 23:48 1
+
+
+Program powinien umożliwiać łatwe wprowadzenie poprawek (np zmiana formatu linii lub dodanie grupowania po innym polu).
+
+--------------------------------------------
 W Wirtualnym Dziekanacie pojawiło się nowe ogłoszenie dla przedmiotu: DI1610:A - Programowanie równoległe i rozproszone - L: Czw. 14:15 - 16:00 w GE 510
 
 Ogłoszenie o tytule: MPI - drugie ćwiczenia zostało opublikowane w dniu 24.03.2013 o godzinie 17:46 przez mgr inż. Zuzanna Krawczyk
@@ -64,5 +117,6 @@ Państwa zadaniem będzie rozwiązanie podobnego problemu w oparciu o program pr
 		 			1. 		 		 			book 			 			(0,6 kb) 			 			 			Z. Krawczyk, 27.03.2013 02:01 		 				 		 	
 		 			2. 		 		 			main.c 			 			(9,1 kb) 			 			 			Z. Krawczyk, 27.03.2013 02:01 		 				 		 	
 		 			3. 		 		 			Makefile 			 			(0,1 kb) 			 			 			Z. Krawczyk, 27.03.2013 02:01 		 				 		 	
+
 
 

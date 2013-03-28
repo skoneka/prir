@@ -19,7 +19,7 @@
 
 
 //kiedy segfaultuje to zmienic wartosc AKEY
-#define AKEY 1000111235123123234
+//#define AKEY 10001112351231232343
 #define ASIZE 4
 
 int handle ;
@@ -97,6 +97,7 @@ void wait_child() {
 
 
 int main( int argc, char **argv) {
+	int AKEY = rand();
 	//seglen - liczba procesow dzieci
 	if (argc < 2) {
 		printf("podaj liczbe procesow dzieci\n");
