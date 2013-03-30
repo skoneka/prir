@@ -7,8 +7,10 @@
 #include <mpi.h>
 
 //
-#define debug printf // odkomentuj, aby zobaczyc komunikaty diagnostyczne
+//#define debug printf // odkomentuj, aby zobaczyc komunikaty diagnostyczne
 #define debug // odkomentuj, aby ukryc komunikaty diagnostyczne
+#define debug2 printf // odkomentuj, aby zobaczyc komunikaty diagnostyczne
+//#define debug2 // odkomentuj, aby ukryc komunikaty diagnostyczne
 #define die(msg, err) do { perror(msg); return err; } while(0)
 #define master 0
 
@@ -66,6 +68,7 @@ divide(int size, int nwords, char *words, int *out_count, int *out_skip)
 void 
 reduce(int nwords, char *words, int *indexes, int *list)
 {
+        if (world_rank == master) raise(SIGINT);
 	int		nbytes;
 	int		i         , j;
 	int            *count = NULL;
@@ -154,6 +157,7 @@ map(int nwords, char *words, int *indexes, int *out_nwords, char *out_words, int
 		for (i = 0; i < nwords; i++)
 			debug("M indexes[%d] = %d\n", i, indexes[i]);
 	}
+	raise(SIGINT);
 	/* nwords */
 	MPI_Scatter(count, 1, MPI_INT, &nwords, 1, MPI_INT, master, MPI_COMM_WORLD);
 	debug("[%d] Got %d words to map\n", world_rank, nwords);
@@ -295,8 +299,10 @@ main(int argc, char **argv)
 	}
 	if (world_rank == master)
 		printf("Faza redukcji %d kluczy na %d procesorach\n", out_nwords, world_size);
-
+        
+        /* redukuje {kN: [v1, v2, v3 ...]} do {kN: sum([v1, v2, v3 ...])} */
 	reduce(out_nwords, out_words, out_indexes, out_occurs);
+        
 
 	if (world_rank == master) {
 		char           *w = out_words;
