@@ -1,5 +1,7 @@
 import apachelog, sys
 from mpi4py import MPI
+from operator import itemgetter
+from itertools import groupby
 
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
@@ -24,8 +26,8 @@ else:
   data = None
 
 
-
-def MR_map(data): 
+# grouper '%h' | '%t'
+def MR_map(data, grouper): 
   divided_data = None
   if data:
     basic_range = len(data) / size
@@ -43,6 +45,12 @@ def MR_map(data):
   divided_data = comm.scatter(divided_data, root=0)
   print('rank '+ str(rank) +' len divided_data '+str(len(divided_data)))
   #print('rank '+ str(rank) +' data '+str(data[0]))
+  divided_data = sorted(divided_data, key=itemgetter(grouper))
+  for key, group in groupby(divided_data, itemgetter(grouper)):
+    for thing in group:
+      print "A %s is a %s." % (thing['%r'], key)
+    print " "
+  
 
-MR_map(data)
+MR_map(data, '%t')
 
