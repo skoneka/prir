@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # python <3
 # 2013 Artur Skonecki, Łukasz Załęski
+# install extra packages:
+# pip install apachelog mpi4py
 import apachelog, sys
 from mpi4py import MPI
 from operator import itemgetter
@@ -40,7 +42,7 @@ def main():
   if rank == 0:
     from optparse import OptionParser
     
-    parser = OptionParser(usage = 'Usage: apachelogstats.py --(addr|stat|time) /var/log/apache2/access.log.1')
+    parser = OptionParser(usage = 'Usage: apachelogstats.py --(addr|time) /var/log/apache2/access.log.1')
     
     parser.add_option("-t", "--time",
     action="store_const", dest="mode", const = '%t',
