@@ -7,43 +7,6 @@ from operator import itemgetter
 from itertools import groupby
 from collections import defaultdict
 
-comm = MPI.COMM_WORLD
-size = comm.Get_size()
-rank = comm.Get_rank()
-
-if rank == 0:
-  from optparse import OptionParser
-  
-  parser = OptionParser(usage = 'Usage: apachelogstats.py --(addr|stat|time) /var/log/apache2/access.log.1')
-  
-  parser.add_option("-t", "--time",
-  action="store_const", dest="mode", const = '%t',
-  help="group by time")
-  parser.add_option("-a", "--addr",
-  action="store_const", dest="mode", const = '%h',
-  help="group by address")
-  
-  (options, args) = parser.parse_args()
-  
-  # Format copied and pasted from Apache conf - use raw string + single quotes
-  format = r'%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"'
-
-  p = apachelog.parser(format)
-  data = []
-
-  for i,line in enumerate(open(args[0])):
-    try:
-      data.append( p.parse( line ) )
-    except:
-      sys.stderr.write("Unable to parse %s" % line)
-    if i > 6: break
-else:
-  data = None
-  options = None
-
-options = comm.bcast(options, root=0)
-
-
 # grouper '%h' | '%t'
 def MR_map(data, grouper): 
   divided_data = None
@@ -65,8 +28,6 @@ def MR_map(data, grouper):
     assert data is None
   return data
 
-ranked_data = MR_map(data, options.mode)
-
 # merge all entries from ranked data dicts
 def MR_reduce(ranked_data):
   dd = defaultdict(list)
@@ -75,11 +36,52 @@ def MR_reduce(ranked_data):
       dd[key] += value
   return dd
 
-if rank == 0:
-  dd = MR_reduce(ranked_data)
+def main():
+  if rank == 0:
+    from optparse import OptionParser
+    
+    parser = OptionParser(usage = 'Usage: apachelogstats.py --(addr|stat|time) /var/log/apache2/access.log.1')
+    
+    parser.add_option("-t", "--time",
+    action="store_const", dest="mode", const = '%t',
+    help="group by time")
+    parser.add_option("-a", "--addr",
+    action="store_const", dest="mode", const = '%h',
+    help="group by address")
+    
+    (options, args) = parser.parse_args()
+    
+    # Format copied and pasted from Apache conf - use raw string + single quotes
+    format = r'%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"'
+
+    p = apachelog.parser(format)
+    data = []
+
+    for i,line in enumerate(open(args[0])):
+      try:
+        data.append( p.parse( line ) )
+      except:
+        sys.stderr.write("Unable to parse %s" % line)
+      if i > 6: break
+  else:
+    data = None
+    options = None
+
+  options = comm.bcast(options, root=0)
   
-  for key, value in dd.iteritems():
-    print( '%s %d' % ( str(key), len(value) ) )
+  ranked_data = MR_map(data, options.mode)
+  
+  if rank == 0:
+    dd = MR_reduce(ranked_data)
+    
+    for key, value in dd.iteritems():
+      print( '%s %d' % ( str(key), len(value) ) )
+
+if __name__ == '__main__':
+  comm = MPI.COMM_WORLD
+  size = comm.Get_size()
+  rank = comm.Get_rank()
+  main()
 
 
 
