@@ -42,7 +42,7 @@ def main():
   if rank == 0:
     from optparse import OptionParser
     
-    parser = OptionParser(usage = 'Usage: apachelogstats.py --(addr|time) /var/log/apache2/access.log.1')
+    parser = OptionParser(usage = 'Usage: mpiexec -n 4 python apachelogstats.py --(addr|time) /var/log/apache2/access.log.1')
     
     parser.add_option("-t", "--time",
     action="store_const", dest="mode", const = '%t',
