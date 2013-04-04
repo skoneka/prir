@@ -1,16 +1,24 @@
+/*
+ * lab PRiR pvm 1
+ * Zadanie polega na zaimplementowaniu programu liczącego całkę jednej zmiennej przy pomocy metody prostokątów/trapezów/simpsona (tak jak w zadaniu z Ćwiczenia 3), z wykorzystaniem PVM.
+ * 2013 Artur Skonecki, Łukasz Kalinowski
+ * $ pvm
+ * pvm> spawn -> master 0 5 1000
+ * 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pvm3.h>
 #include <math.h>
 
-#define NPROC 2
-#define NTIDS 4
+#define NPROC 3
 
 int main(int argc, char **argv)
 {
   int myTID;
-  int x = 12;
-  int tids[NTIDS] = {[0 ... NTIDS-1] = 0};
+
+  int tids[NPROC] = {[0 ... NPROC-1] = 0};
   int res;
 
   myTID = pvm_mytid();
@@ -39,14 +47,14 @@ int main(int argc, char **argv)
   printf ("basic_range = %f\n", basic_range);
   
 
-  res = pvm_spawn("slave", NULL, PvmTaskDefault, "", 2, tids);
+  res = pvm_spawn("slave", NULL, PvmTaskDefault, "", NPROC, tids);
   printf("res %d\n", res);
   if (res<1) {
     printf("Master: pvm_spawn error\n");
     pvm_exit();
     exit(1);
   }
-  //for (int procindex = 0; procindex < NTIDS; procindex++) printf("tids[%d] = %d\n", procindex, tids[procindex]);
+  //for (int procindex = 0; procindex < NPROC; procindex++) printf("tids[%d] = %d\n", procindex, tids[procindex]);
 
   for (int procindex = 0; procindex < NPROC; procindex++) {
     pvm_initsend(PvmDataDefault);
@@ -55,11 +63,6 @@ int main(int argc, char **argv)
     pvm_pkint(&num_points, 1, 1);
 
     pvm_send(tids[procindex], 1);
-/*
-    pvm_recv(-1, -1);
-    pvm_upkint(&x, 1, 1);
-
-    printf("Master from tids[%d] has received x=%d\n", tids[procindex], x);*/
   }
 
   double result=0;

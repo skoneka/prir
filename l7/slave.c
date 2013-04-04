@@ -3,9 +3,19 @@
 
 double f(double x)
 {
-  return x*x;
+  return x*x*x;
 }
 
+//simpson
+double
+simpson(double a, double h, int index)
+{
+  double          result = 0;
+  double          ax = a + (h * (index - 1));
+  double          bx = a + (h * index);
+  result = ((bx - ax) / 6) * (f(ax) + (4 * f((ax + bx) / 2) + f(bx)));
+  return result;
+}
 
 //trapezoid
 double
@@ -37,7 +47,7 @@ int main()
   double h = ( end - begin ) / num_points;
 
   for (int i = 1; i < num_points; i++) {
-    result += trapezoid(begin, h, i);
+    result += simpson(begin, h, i);
   }
   
   pvm_initsend(PvmDataDefault);

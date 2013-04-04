@@ -1,0 +1,7 @@
+export PVM_ARCH=LINUX64
+export PVM_ROOT=/usr/lib/pvm3
+export PVM_HOME=${PVM_ROOT}
+export PVM_RSH=/usr/bin/ssh
+export PVM_TMP=/tmp
+export PATH=${PVM_ROOT}:${PVM_ROOT}/bin:${PATH}
+
