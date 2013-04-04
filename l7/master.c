@@ -38,16 +38,7 @@ int main(int argc, char **argv)
 
   printf ("basic_range = %f\n", basic_range);
   
-//   res = pvm_spawn("slave", NULL, PvmTaskDefault, "", 1, tids);
-//   printf("res %d\n", res);
-//   if (res<1) {
-//     printf("Master: pvm_spawn error\n");
-//     pvm_exit();
-//     exit(1);
-//   }
 
-  for (int procindex = 0; procindex < NTIDS; procindex++) printf("tids[%d] = %d\n", procindex, tids[procindex]);
-  
   res = pvm_spawn("slave", NULL, PvmTaskDefault, "", 2, tids);
   printf("res %d\n", res);
   if (res<1) {
@@ -55,11 +46,10 @@ int main(int argc, char **argv)
     pvm_exit();
     exit(1);
   }
-  for (int procindex = 0; procindex < NTIDS; procindex++) printf("tids[%d] = %d\n", procindex, tids[procindex]);
+  //for (int procindex = 0; procindex < NTIDS; procindex++) printf("tids[%d] = %d\n", procindex, tids[procindex]);
 
   for (int procindex = 0; procindex < NPROC; procindex++) {
     pvm_initsend(PvmDataDefault);
-    pvm_pkint(&x, 1, 1);
     pvm_pkdouble(&begins[procindex], 1, 1);
     pvm_pkdouble(&ends[procindex], 1, 1);
     pvm_pkint(&num_points, 1, 1);
@@ -71,12 +61,17 @@ int main(int argc, char **argv)
 
     printf("Master from tids[%d] has received x=%d\n", tids[procindex], x);*/
   }
-  for (int procindex = 0; procindex < NPROC; procindex++) {
-    pvm_recv(-1, -1);
-    pvm_upkint(&x, 1, 1);
 
-    printf("Master has received x=%d\n", x);
+  double result=0;
+  for (int procindex = 0; procindex < NPROC; procindex++) {
+    double r=0;
+    pvm_recv(-1, -1);
+    pvm_upkdouble(&r, 1, 1);
+
+    printf("Master has received r=%f\n", r);
+    result += r;
   }
+  printf("Result %f\n", result);
 
   pvm_exit();
 
