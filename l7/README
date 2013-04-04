@@ -1,3 +1,74 @@
+Uruchomienie PVM w systemie Debian Ostatnia modyfikacja: B. Chaber 4.03.2013 23:53
+Konfiguracja systemu:
+
+1. Podczas uruchamiania komputera wybrać wystartowanie sytemu Debian,
+2. Po automatycznym zalogowaniu otworzyć konsolę,
+3. Uaktualnić spis pakietów oprogramowania:
+$ sudo apt-get update
+4. Zainstalować PVM, nagłówki PVM, serwer SSH, program VIM i program Make:
+$ sudo apt-get install pvm pvm-dev openssh-server vim make
+5. Zmienić aktualne hasło użytkownika:
+$ sudo passwd user
+6. Dopisać do pliku ~/.bashrc następujące zmienne środowiskowe:
+export PVM_ROOT=/usr/lib/pvm3
+export PVM_HOME=${PVM_ROOT}
+export PVM_ARCH=LINUX
+export PVM_RSH=/usr/bin/ssh
+export PVM_TMP=/tmp
+export PATH=${PVM_ROOT}:${PVM_ROOT}/bin:${PATH}
+7. Wczytać nowe zmienne środowiskowe:
+$ source ~/.bashrc
+8. Odczytać adres IP maszyny (z puli: 194.29.146.x) :
+$ sudo ifconfig eth0
+9. Wyedytować plik /etc/hosts usuwając 'debian' z linii zawierającej adres 127.0.0.1
+$ sudo vim /etc/hosts
+10. Dodać wpis do /etc/hosts w następującym formacie: <ip z kroku 8>   debian
+11. Utworzyć klucz dla połączenia ssh (zaakceptować domyślne położenie, NIE wpisywać hasła):
+$ ssh-keygen
+12. Pobrać przykładowe pliki z programami PVM dołączone do tego ćwiczenia.
+
+Uruchomienie programu na jednej maszynie:
+
+13. Skompilować program hello.c:
+$ gcc -o hello hello.c -lpvm3
+14. Utworzyć katalog z programami widocznymi dla PVM:
+$ sudo mkdir -p ${PVM_ROOT}/bin/${PVM_ARCH}
+15. Skopiować tam skompilowany plik:
+$ sudo cp hello ${PVM_ROOT}/bin/${PVM_ARCH}
+16. Uruchomić wirtualną maszynę PVM:
+$ pvm
+17. Po wyjściu z wirtualnej maszyny PVM za pomocą CTRL+C
+maszyna nadal działa, aby ją zatrzymać należy uruchomić pvm i wydać komendę halt:
+$ pvm
+pvm> halt
+$
+18. Uruchomić ponownie wirtualną maszynę PVM i za pomocą komendy spawn -> hello
+spróbować uruchomić program testowy:
+$ pvm
+pvm > spawn -> hello
+
+Uruchomienie programu na dwóch maszynach:
+
+19. Wymienić się kluczami z innym zespołem:
+bartek $ scp ~/.ssh/id_rsa.pub 194.29.146.210:~
+bartek $ ssh 194.29.146.210
+bogumił $ cat id_rsa.pub >> ~/.ssh/authorized_keys
+20. Zamknąć konsolę pvm na obydwu komputerach
+21. Uruchomić konsolę PVM tylko na jednym z komputerów:
+22. W konsoli PVM wydać komendę (komenda automatycznie uruchomi konsolę PVM na drugim komputerze):
+pvm> add 194.29.146.210
+23. Sprawdzić aktualnie dostępne maszyny:
+pvm> conf
+24. Skompilować programy master.c i slave.c
+25. Przenieść programy do ${PVM_ROOT}/bin/${PVM_ARCH} na OBYDWU komputerach (cp i scp)
+26. Sprawdzić aktualnie uruchomione procesy na obydwu maszynach:
+pvm> ps
+27. Uruchomić na jednej z maszyn program master:
+pvm> spawn -> master
+28. Sprawdzić czy procesy uruchomiły się na obydwu maszynach
+
+
+------------
 Zadanie polega na zaimplementowaniu programu liczącego całkę jednej zmiennej przy pomocy metody prostokątów/trapezów/simpsona (tak jak w zadaniu z Ćwiczenia 3), z wykorzystaniem PVM.
 
 Informacje o PVM możecie Państwo znaleźć:
