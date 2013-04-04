@@ -1,0 +1,62 @@
+Zadanie polega na zaimplementowaniu programu liczącego całkę jednej zmiennej przy pomocy metody prostokątów/trapezów/simpsona (tak jak w zadaniu z Ćwiczenia 3), z wykorzystaniem PVM.
+
+Informacje o PVM możecie Państwo znaleźć:
+
+http://wazniak.mimuw.edu.pl/index.php?title=Pr_m02_lab
+
+http://wazniak.mimuw.edu.pl/index.php?title=Pr_m03_lab
+
+
+
+Program powinien składać się z dwóch części:
+
+master – program rozsyłający zadania do poszczególnych workerów, zbierający od nich wyniki cząstkowe, i obliczający końcową wartość
+slave – program liczący wartość całki w podprzedziale i dla liczby punktów wysłanej przez program główny i wysyłający wynik cząstkowy do mastera.
+
+
+Program powinien umożliwiać zadanie liczby tworzonych procesów, przedziału całkowania oraz liczby punktów, dzielonych następnie pomiędzy procesy.
+
+Master nie musi dostawać swojego przydziału obliczeń.
+
+
+
+W celu uruchomienia programu na len-ie należy ustawić zmienne PVM_ARCH, PVM_ROOT
+
+$ export PVM_ARCH=LINUX64
+
+$ export PVM_ROOT=/usr/lib/pvm3
+
+
+
+oraz przekopiować pliki binarne programu do katalogu:
+$HOME/pvm3/bin/LINUX64/
+
+
+
+
+
+kompilacja programu:
+
+gcc master.c -o master -lpvm3
+
+gcc slave.c -o slave -lpvm3
+
+
+
+Uruchomienie programu:
+
+$ pvm
+
+pvm> spawn -> master
+
+
+
+sprawdzenie konfiguracji hostów:
+
+pvm> conf
+
+
+
+Uwaga wyjście z konsoli pvm, nie powoduje zakończenia pracy pvmd. Aby zakończyć działanie środowiska należy uruchomić konsoleę pvm (polecenie pvm) i wykonać polecenie halt.
+
+pvm > halt
