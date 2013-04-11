@@ -1,0 +1,70 @@
+Zadanie składa się z dwóch części:
+
+Część pierwsza:
+
+Proszę na dwóch maszynach (len , oraz vxjac) uruchomić przykładowy program napisany z wykorzystaniem pvm ( pliki master.c, slave.c z sekcji Uruchomienie PVM w systemie Debian). Vxjac, podobnie jak len jest maszyną wirtualną (Ubuntu 12.04, architektura x86_64). Na vxjac, podobnie jak na lenie, montowany jest Państwa katalog domowy z volta. Logowanie analogicznie jak na len (z LDAP na volt). W celu uruchomienia programu przykładowego należy:
+
+Utworzyć klucz dla połączenia ssh (zaakceptować domyślne położenie, nie wpisywać hasła):
+$ssh-keygen
+
+Dodać klucz publiczny do authorized_keys: 
+   $ cat id_rsa.pub >> ~/.ssh/authorized_keys
+
+Wyeksportować zmienne PVM_ARCH oraz PVM_ROOT
+           $ export PVM_ARCH=LINUX64
+
+           $ export PVM_ROOT=/usr/lib/pvm3
+
+Skompilować pliki:
+   $ gcc master.c -o master -lpvm3
+
+   $ gcc slave.c -o slave -lpvm3
+
+Przekopiować pliki binarne do katalogu: 
+   $HOME/pvm3/bin/LINUX64/
+
+uruchomić na lenie konsolę pvm z opcją -nvxlen
+   $ pvm -nvxlen
+
+dodać do konfiguracji pvm-a drugą maszynę:
+          $ add vxjac
+
+uruchomić program:
+       $  pvm> spawn->master
+
+Część druga 
+
+Druga część zadania polega na napisaniu programu rozsyłającego przy pomocy polecenia pvm_scatter fragmenty wektora do poszczególnych procesów (także mastera), a następnie zsumowaniu ich przy użyciu funkcji pvm_reduce. Program powinien składać się z dwóch plików: master oraz slave. Działanie programu:
+
+Master:
+
+Proces macierzysty tworzy grupę procesów i dołącza do niej przy użyciu funkcji pvm_joingroup( grup_name).
+Proces macierzysty tworzy programy typu slave przy pomocy funkcji pvm_spawn
+Następuje synchronizacja komunikacji (bariera) – funkcja pvm_barrier.
+Proces macierzysty rozsyła elementy wektora do siebie oraz procesów typu slave przy pomocy funkcji pvm_scatter
+Proces macierzysty wykonuje sumowanie elementów otrzymanego fragmentu wektora.
+Proces macierzysty wywołuje funkcję pvm_reduce, z użyciem funkcji sumującej (PvmSum) podając jej swój lokalny wynik.
+Następuje synchronizacja komunikacji (bariera) oraz odłączenie procesu od grupy przy użyciu funkcji pvm_lvgroup(group_name).
+Wyjście ze środowiska pvm (pvm_exit) .
+Slave
+
+Proces slave dołącza do grupy procesów przy użyciu funkcji pvm_joingroup
+Następuje synchronizacja komunikacji (bariera) – funkcja pvm_barrier.
+Proces otrzymuje swój element wektora poprzez wywołanie funkcji pvm_scatter
+Dalsze punkty jak 5- 8 w procesie-zarządcy.
+ Dla uproszczenia sumowany wektor może zostać podany wewnątrz programu.
+
+Uwagi techniczne:
+
+Zarządzaniem grupami w środowisku PVM zajmuje się wydzielony demon, nazywany serwerem grup (pvmgs). Jest on automatycznie uruchamiany, jeżeli następuje taka potrzeba. Do prawidłowego działania Państwa programu może być konieczne przekopiowanie pliku binarnego pvmgs do katalogu w którym znajdują się pliki binarne Państwa programów:
+
+cp /usr/lib/pvm3/lib/pvmgs sciezka/do/panstwa/folderu
+
+Programy należy kompilać z dodatkową flagą:
+
+gcc slave.c -o slave -lpvm3 -lgpvm3
+
+gcc master.c -o master -lpvm3 -lgpvm3
+
+
+
